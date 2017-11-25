@@ -5,10 +5,10 @@ using UnityEngine.UI;
 
 public class ScrollRectSnap_CS : MonoBehaviour 
 {
-
     public RectTransform panel;
     public Button[] bttn;
     public RectTransform center;
+    public int startButton = 1;
 
     private float[] distance;
     private float[] distReposition;
@@ -16,14 +16,17 @@ public class ScrollRectSnap_CS : MonoBehaviour
     private int bttnDistance;
     private int minButtonNum;
     private int bttnLength;
+    private bool messageSend = false;
+    private float lerpSpeed = 5f;
+    private bool targetNearsButton = true;
 
     private void Start()
     {
         bttnLength = bttn.Length;
         distance = new float[bttnLength];
         distReposition = new float[bttnLength];
-
         bttnDistance = (int)Mathf.Abs(bttn[1].GetComponent<RectTransform>().anchoredPosition.x - bttn[0].GetComponent<RectTransform>().anchoredPosition.x);
+        panel.anchoredPosition = new Vector2((startButton - 1) * -300f, 0);
     }
 
     private void Update()
@@ -52,36 +55,56 @@ public class ScrollRectSnap_CS : MonoBehaviour
             }
         }
 
-        float minDistance = Mathf.Min(distance);
-
-        for (int a = 0; a < bttn.Length; a++)
+        if (targetNearsButton)
         {
-            if (minDistance == distance[a])
+            float minDistance = Mathf.Min(distance);
+
+            for (int a = 0; a < bttn.Length; a++)
             {
-                minButtonNum = a;
+                if (minDistance == distance[a])
+                {
+                    minButtonNum = a;
+                }
             }
         }
 
         if (!dragging)
         {
-            //LerpToBttn(minButtonNum * - bttnDistance);
             LerpToBttn(-bttn[minButtonNum].GetComponent<RectTransform>().anchoredPosition.x);
 
         }
-
     }
 
     void LerpToBttn(float position)
     {
-        float newX = Mathf.Lerp(panel.anchoredPosition.x, position, Time.deltaTime * 10f);
-        Vector2 newPosition = new Vector2(newX, panel.anchoredPosition.y);
+        float newX = Mathf.Lerp(panel.anchoredPosition.x, position, Time.deltaTime * lerpSpeed);
 
+        if (Mathf.Abs(position - newX) < 3f)
+        {
+            newX = position;
+        }
+
+        if (Mathf.Abs(newX) >= Mathf.Abs(position) - 4f && Mathf.Abs(newX) <= Mathf.Abs(position) + 4 && !messageSend)
+        {
+            messageSend = true;
+            SendMessageFromButton(minButtonNum);
+        }
+
+        Vector2 newPosition = new Vector2(newX, panel.anchoredPosition.y);
         panel.anchoredPosition = newPosition;
+    }
+
+    void SendMessageFromButton(int buttonIndex)
+    {
+        Debug.Log("SendMessage : " + buttonIndex); 
     }
 
     public void StartDrag()
     {
+        messageSend = false;
         dragging = true;
+        lerpSpeed = 5f;
+        targetNearsButton = true;
     }
 
     public void EndDrag()
@@ -89,5 +112,9 @@ public class ScrollRectSnap_CS : MonoBehaviour
         dragging = false; 
     }
 
-
+    public void GoToButton(int buttonIndex)
+    {
+        targetNearsButton = false;
+        minButtonNum = buttonIndex - 1;
+    }
 }
