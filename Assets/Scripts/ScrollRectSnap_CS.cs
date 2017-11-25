@@ -11,14 +11,17 @@ public class ScrollRectSnap_CS : MonoBehaviour
     public RectTransform center;
 
     private float[] distance;
+    private float[] distReposition;
     private bool dragging = false;
     private int bttnDistance;
     private int minButtonNum;
+    private int bttnLength;
 
     private void Start()
     {
-        int bttnLength = bttn.Length;
+        bttnLength = bttn.Length;
         distance = new float[bttnLength];
+        distReposition = new float[bttnLength];
 
         bttnDistance = (int)Mathf.Abs(bttn[1].GetComponent<RectTransform>().anchoredPosition.x - bttn[0].GetComponent<RectTransform>().anchoredPosition.x);
     }
@@ -27,7 +30,26 @@ public class ScrollRectSnap_CS : MonoBehaviour
     {
         for (int i = 0; i < bttn.Length; i++)
         {
-            distance[i] = Mathf.Abs(center.transform.position.x - bttn[i].transform.position.x);
+            distReposition[i] = center.GetComponent<RectTransform>().position.x - bttn[i].GetComponent<RectTransform>().position.x;
+            distance[i] = Mathf.Abs(distReposition[i]);
+
+            if (distReposition[i] > 1200)
+            {
+                float curX = bttn[i].GetComponent<RectTransform>().anchoredPosition.x;
+                float curY = bttn[i].GetComponent<RectTransform>().anchoredPosition.y;
+
+                Vector2 newAnchoredPos = new Vector2(curX + (bttnLength * bttnDistance), curY);
+                bttn[i].GetComponent<RectTransform>().anchoredPosition = newAnchoredPos;
+            }
+
+            if (distReposition[i] < -1200)
+            {
+                float curX = bttn[i].GetComponent<RectTransform>().anchoredPosition.x;
+                float curY = bttn[i].GetComponent<RectTransform>().anchoredPosition.y;
+
+                Vector2 newAnchoredPos = new Vector2(curX - (bttnLength * bttnDistance), curY);
+                bttn[i].GetComponent<RectTransform>().anchoredPosition = newAnchoredPos;
+            }
         }
 
         float minDistance = Mathf.Min(distance);
@@ -42,12 +64,14 @@ public class ScrollRectSnap_CS : MonoBehaviour
 
         if (!dragging)
         {
-            LerpToBttn(minButtonNum * - bttnDistance);
+            //LerpToBttn(minButtonNum * - bttnDistance);
+            LerpToBttn(-bttn[minButtonNum].GetComponent<RectTransform>().anchoredPosition.x);
+
         }
 
     }
 
-    void LerpToBttn(int position)
+    void LerpToBttn(float position)
     {
         float newX = Mathf.Lerp(panel.anchoredPosition.x, position, Time.deltaTime * 10f);
         Vector2 newPosition = new Vector2(newX, panel.anchoredPosition.y);
