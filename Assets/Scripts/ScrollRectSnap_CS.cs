@@ -22,8 +22,10 @@ public class ScrollRectSnap_CS : MonoBehaviour
     private int contentLength;
     private bool isDragging = false;
     private bool isMessageSend = false;
-    private bool isTargetNearsButton = true;
+    private bool isTargetNearsContent = true;
 
+    private Vector3 scale = Vector3.one;
+    private float scaleValue = 0.0f;
 
     private void Start()
     {
@@ -54,12 +56,23 @@ public class ScrollRectSnap_CS : MonoBehaviour
                 Vector2 newAnchoredPos = new Vector2(curX - (contentLength * contentDistance), curY);
                 contents[i].GetComponent<RectTransform>().anchoredPosition = newAnchoredPos;
             }
+
+            if (distance[i] >= contentDistance)
+            {
+                scale = Vector3.one;
+            }
+            else
+            {
+                scaleValue = ((contentDistance - distance[i]) / contentDistance);
+                scaleValue *= 0.1f;
+                scale = new Vector3(1 + scaleValue, 1 + scaleValue, 1);
+            }
+            contents[i].GetComponent<RectTransform>().localScale = scale;
         }
 
-        if (isTargetNearsButton)
+        if (isTargetNearsContent)
         {
             float minDistance = Mathf.Min(distance);
-
             for (int a = 0; a < contents.Length; a++)
             {
                 if (minDistance == distance[a])
@@ -87,7 +100,6 @@ public class ScrollRectSnap_CS : MonoBehaviour
         thresholdLeft = -(panelWidth * 0.5f);
         thresholdRight = panelWidth * 0.5f;
     }
-
 
     private void LerpToContent(float position)
     {
@@ -117,7 +129,7 @@ public class ScrollRectSnap_CS : MonoBehaviour
     {
         isMessageSend = false;
         isDragging = true;
-        isTargetNearsButton = true;
+        isTargetNearsContent = true;
     }
 
     public void EndDrag()
@@ -127,7 +139,7 @@ public class ScrollRectSnap_CS : MonoBehaviour
 
     public void GoToContent(int contentIndex)
     {
-        isTargetNearsButton = false;
+        isTargetNearsContent = false;
         minContentNum = contentIndex - 1;
     }
 }
