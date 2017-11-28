@@ -275,7 +275,7 @@ GameObject:
   - component: {fileID: 237728378}
   - component: {fileID: 237728377}
   m_Layer: 5
-  m_Name: Button_3
+  m_Name: Content_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -386,7 +386,7 @@ GameObject:
   - component: {fileID: 246743417}
   - component: {fileID: 246743416}
   m_Layer: 5
-  m_Name: Button_2
+  m_Name: Content_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -651,7 +651,7 @@ GameObject:
   - component: {fileID: 552713602}
   - component: {fileID: 552713601}
   m_Layer: 5
-  m_Name: Button_7
+  m_Name: Content_7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -762,7 +762,7 @@ GameObject:
   - component: {fileID: 625052053}
   - component: {fileID: 625052052}
   m_Layer: 5
-  m_Name: Button_5
+  m_Name: Content_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1231,7 +1231,7 @@ GameObject:
   - component: {fileID: 1326406557}
   - component: {fileID: 1326406556}
   m_Layer: 5
-  m_Name: Button_8
+  m_Name: Content_8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1342,7 +1342,7 @@ GameObject:
   - component: {fileID: 1438063553}
   - component: {fileID: 1438063552}
   m_Layer: 5
-  m_Name: Button_4
+  m_Name: Content_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1453,7 +1453,7 @@ GameObject:
   - component: {fileID: 1446233125}
   - component: {fileID: 1446233124}
   m_Layer: 5
-  m_Name: Button_6
+  m_Name: Content_6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1686,7 +1686,7 @@ GameObject:
   - component: {fileID: 1545024036}
   - component: {fileID: 1545024035}
   m_Layer: 5
-  m_Name: Button_1
+  m_Name: Content_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2128,7 +2128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 409841d3f462740c0967a94ef7d9b4cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bttn:
+  contents:
   - {fileID: 1545024035}
   - {fileID: 246743416}
   - {fileID: 237728377}
@@ -2137,9 +2137,11 @@ MonoBehaviour:
   - {fileID: 1446233124}
   - {fileID: 552713601}
   - {fileID: 1326406556}
-  panelRT: {fileID: 1930707015}
+  contentPanelRT: {fileID: 1930707015}
   centerRT: {fileID: 2049507970}
-  startButton: 6
+  startContent: 1
+  completeRevise: 3
+  messageRevise: 4
 --- !u!4 &1746301320
 Transform:
   m_ObjectHideFlags: 0
@@ -2302,7 +2304,7 @@ GameObject:
   - component: {fileID: 1930707015}
   - component: {fileID: 1930707017}
   m_Layer: 5
-  m_Name: ScrollPanel
+  m_Name: Panel-Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
