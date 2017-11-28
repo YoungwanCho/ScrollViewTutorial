@@ -2128,7 +2128,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 409841d3f462740c0967a94ef7d9b4cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panel: {fileID: 1930707015}
   bttn:
   - {fileID: 1545024035}
   - {fileID: 246743416}
@@ -2138,7 +2137,8 @@ MonoBehaviour:
   - {fileID: 1446233124}
   - {fileID: 552713601}
   - {fileID: 1326406556}
-  center: {fileID: 2049507970}
+  panelRT: {fileID: 1930707015}
+  centerRT: {fileID: 2049507970}
   startButton: 6
 --- !u!4 &1746301320
 Transform:

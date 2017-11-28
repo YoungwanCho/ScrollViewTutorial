@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public class ScrollRectSnap_CS : MonoBehaviour 
 {
-    public RectTransform panel;
     public Button[] bttn;
-    public RectTransform center;
+    public RectTransform contentPanelRT;
+    public RectTransform centerRT;
     public int startButton = 1;
 
     private float[] distance;
@@ -19,24 +19,23 @@ public class ScrollRectSnap_CS : MonoBehaviour
     private bool isDragging = false;
     private bool isMessageSend = false;
     private bool isTargetNearsButton = true;
+    private float thresholdLeft = 0.0f;
+    private float thresholdRight = 0.0f;
+
 
     private void Start()
     {
-        bttnLength = bttn.Length;
-        distance = new float[bttnLength];
-        distReposition = new float[bttnLength];
-        bttnDistance = (int)Mathf.Abs(bttn[1].GetComponent<RectTransform>().anchoredPosition.x - bttn[0].GetComponent<RectTransform>().anchoredPosition.x);
-        panel.anchoredPosition = new Vector2((startButton - 1) * -bttnDistance, 0);
+        Initialize();
     }
 
     private void Update()
     {
         for (int i = 0; i < bttn.Length; i++)
         {
-            distReposition[i] = center.GetComponent<RectTransform>().position.x - bttn[i].GetComponent<RectTransform>().position.x;
+            distReposition[i] = centerRT.position.x - bttn[i].GetComponent<RectTransform>().position.x;
             distance[i] = Mathf.Abs(distReposition[i]);
 
-            if (distReposition[i] > 1200)
+            if (distReposition[i] > thresholdRight)
             {
                 float curX = bttn[i].GetComponent<RectTransform>().anchoredPosition.x;
                 float curY = bttn[i].GetComponent<RectTransform>().anchoredPosition.y;
@@ -45,7 +44,7 @@ public class ScrollRectSnap_CS : MonoBehaviour
                 bttn[i].GetComponent<RectTransform>().anchoredPosition = newAnchoredPos;
             }
 
-            if (distReposition[i] < -1200)
+            if (distReposition[i] < thresholdLeft)
             {
                 float curX = bttn[i].GetComponent<RectTransform>().anchoredPosition.x;
                 float curY = bttn[i].GetComponent<RectTransform>().anchoredPosition.y;
@@ -74,9 +73,23 @@ public class ScrollRectSnap_CS : MonoBehaviour
         }
     }
 
+    private void Initialize()
+    {
+        bttnLength = bttn.Length;
+        distance = new float[bttnLength];
+        distReposition = new float[bttnLength];
+        bttnDistance = (int)Mathf.Abs(bttn[1].GetComponent<RectTransform>().anchoredPosition.x - bttn[0].GetComponent<RectTransform>().anchoredPosition.x);
+        contentPanelRT.anchoredPosition = new Vector2((startButton - 1) * -bttnDistance, 0);
+
+        float panelWidth = bttnLength * bttnDistance;
+        thresholdLeft = -(panelWidth * 0.5f);
+        thresholdRight = panelWidth * 0.5f;
+    }
+
+
     private void LerpToBttn(float position)
     {
-        float newX = Mathf.Lerp(panel.anchoredPosition.x, position, Time.deltaTime * lerpSpeed);
+        float newX = Mathf.Lerp(contentPanelRT.anchoredPosition.x, position, Time.deltaTime * lerpSpeed);
 
         if (Mathf.Abs(position - newX) < 3f)
         {
@@ -89,8 +102,8 @@ public class ScrollRectSnap_CS : MonoBehaviour
             SendMessageFromButton(minButtonNum);
         }
 
-        Vector2 newPosition = new Vector2(newX, panel.anchoredPosition.y);
-        panel.anchoredPosition = newPosition;
+        Vector2 newPosition = new Vector2(newX, contentPanelRT.anchoredPosition.y);
+        contentPanelRT.anchoredPosition = newPosition;
     }
 
     private void SendMessageFromButton(int buttonIndex)
