@@ -9,18 +9,21 @@ public class ScrollRectSnap_CS : MonoBehaviour
     public RectTransform contentPanelRT;
     public RectTransform centerRT;
     public int startButton = 1;
+    public float completeRevise = 3.0f;
+    public float messageRevise = 4.0f;
 
     private float[] distance;
     private float[] distReposition;
     private float lerpSpeed = 5f;
+    private float thresholdLeft = 0.0f;
+    private float thresholdRight = 0.0f;
     private int bttnDistance;
     private int minButtonNum;
     private int bttnLength;
     private bool isDragging = false;
     private bool isMessageSend = false;
     private bool isTargetNearsButton = true;
-    private float thresholdLeft = 0.0f;
-    private float thresholdRight = 0.0f;
+
 
 
     private void Start()
@@ -91,12 +94,12 @@ public class ScrollRectSnap_CS : MonoBehaviour
     {
         float newX = Mathf.Lerp(contentPanelRT.anchoredPosition.x, position, Time.deltaTime * lerpSpeed);
 
-        if (Mathf.Abs(position - newX) < 3f)
+        if (Mathf.Abs(position - newX) < completeRevise)
         {
             newX = position;
         }
 
-        if (Mathf.Abs(newX) >= Mathf.Abs(position) - 4f && Mathf.Abs(newX) <= Mathf.Abs(position) + 4 && !isMessageSend)
+        if (Mathf.Abs(newX) >= Mathf.Abs(position) - messageRevise && Mathf.Abs(newX) <= Mathf.Abs(position) + messageRevise && !isMessageSend)
         {
             isMessageSend = true;
             SendMessageFromButton(minButtonNum);
@@ -115,7 +118,6 @@ public class ScrollRectSnap_CS : MonoBehaviour
     {
         isMessageSend = false;
         isDragging = true;
-        lerpSpeed = 5f;
         isTargetNearsButton = true;
     }
 
