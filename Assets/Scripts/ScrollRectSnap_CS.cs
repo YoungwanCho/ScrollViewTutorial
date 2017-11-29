@@ -5,21 +5,22 @@ using UnityEngine.UI;
 
 public class ScrollRectSnap_CS : MonoBehaviour 
 {
-    public Button[] contents;
-    public RectTransform contentPanelRT;
-    public RectTransform centerRT;
-    public int startContent = 1;
-    public float completeRevise = 3.0f;
-    public float messageRevise = 4.0f;
+    public Button[] contents_ = null;
+    public RectTransform contentPanelRT_ = null;
+    public RectTransform centerRT = null;
+    public int startContent_ = 1;
+    public float completeRevise_ = 3.0f;
+    public float messageRevise_ = 4.0f;
 
-    private float[] distance;
-    private float[] distReposition;
+    private RectTransform[] _contentsRT = null;
+    private float[] distance = null;
+    private float[] distReposition = null;
     private float lerpSpeed = 5f;
     private float thresholdLeft = 0.0f;
     private float thresholdRight = 0.0f;
-    private int contentDistance;
-    private int minContentNum;
-    private int contentLength;
+    private int contentDistance = 0;
+    private int minContentNum = 0;
+    private int contentLength = 0;
     private bool isDragging = false;
     private bool isMessageSend = false;
     private bool isTargetNearsContent = true;
@@ -34,27 +35,27 @@ public class ScrollRectSnap_CS : MonoBehaviour
 
     private void Update()
     {
-        for (int i = 0; i < contents.Length; i++)
+        for (int i = 0; i < contentLength; i++)
         {
-            distReposition[i] = centerRT.position.x - contents[i].GetComponent<RectTransform>().position.x;
+            distReposition[i] = centerRT.position.x - _contentsRT[i].position.x;
             distance[i] = Mathf.Abs(distReposition[i]);
 
             if (distReposition[i] > thresholdRight)
             {
-                float curX = contents[i].GetComponent<RectTransform>().anchoredPosition.x;
-                float curY = contents[i].GetComponent<RectTransform>().anchoredPosition.y;
+                float curX = _contentsRT[i].anchoredPosition.x;
+                float curY = _contentsRT[i].anchoredPosition.y;
 
                 Vector2 newAnchoredPos = new Vector2(curX + (contentLength * contentDistance), curY);
-                contents[i].GetComponent<RectTransform>().anchoredPosition = newAnchoredPos;
+                _contentsRT[i].anchoredPosition= newAnchoredPos;
             }
 
             if (distReposition[i] < thresholdLeft)
             {
-                float curX = contents[i].GetComponent<RectTransform>().anchoredPosition.x;
-                float curY = contents[i].GetComponent<RectTransform>().anchoredPosition.y;
+                float curX = _contentsRT[i].anchoredPosition.x;
+                float curY = _contentsRT[i].anchoredPosition.y;
 
                 Vector2 newAnchoredPos = new Vector2(curX - (contentLength * contentDistance), curY);
-                contents[i].GetComponent<RectTransform>().anchoredPosition = newAnchoredPos;
+                _contentsRT[i].anchoredPosition = newAnchoredPos;
             }
 
             if (distance[i] >= contentDistance)
@@ -67,13 +68,13 @@ public class ScrollRectSnap_CS : MonoBehaviour
                 scaleValue *= 0.1f;
                 scale = new Vector3(1 + scaleValue, 1 + scaleValue, 1);
             }
-            contents[i].GetComponent<RectTransform>().localScale = scale;
+            _contentsRT[i].localScale = scale;
         }
 
         if (isTargetNearsContent)
         {
             float minDistance = Mathf.Min(distance);
-            for (int a = 0; a < contents.Length; a++)
+            for (int a = 0; a < contentLength; a++)
             {
                 if (minDistance == distance[a])
                 {
@@ -84,17 +85,24 @@ public class ScrollRectSnap_CS : MonoBehaviour
 
         if (!isDragging)
         {
-            LerpToContent(-contents[minContentNum].GetComponent<RectTransform>().anchoredPosition.x);
+            LerpToContent(-_contentsRT[minContentNum].anchoredPosition.x);
         }
     }
 
     private void Initialize()
     {
-        contentLength = contents.Length;
+        contentLength = contents_.Length;
         distance = new float[contentLength];
         distReposition = new float[contentLength];
-        contentDistance = (int)Mathf.Abs(contents[1].GetComponent<RectTransform>().anchoredPosition.x - contents[0].GetComponent<RectTransform>().anchoredPosition.x);
-        contentPanelRT.anchoredPosition = new Vector2((startContent - 1) * -contentDistance, 0);
+        _contentsRT = new RectTransform[contentLength];
+
+        for (int i = 0; i < contentLength; i++)
+        {
+            _contentsRT[i] = contents_[i].GetComponent<RectTransform>();
+        }
+
+        contentDistance = (int)Mathf.Abs(_contentsRT[1].anchoredPosition.x - _contentsRT[0].anchoredPosition.x);
+        contentPanelRT_.anchoredPosition = new Vector2((startContent_ - 1) * -contentDistance, 0);
 
         float panelWidth = contentLength * contentDistance;
         thresholdLeft = -(panelWidth * 0.5f);
@@ -103,21 +111,21 @@ public class ScrollRectSnap_CS : MonoBehaviour
 
     private void LerpToContent(float position)
     {
-        float newX = Mathf.Lerp(contentPanelRT.anchoredPosition.x, position, Time.deltaTime * lerpSpeed);
+        float newX = Mathf.Lerp(contentPanelRT_.anchoredPosition.x, position, Time.deltaTime * lerpSpeed);
 
-        if (Mathf.Abs(position - newX) < completeRevise)
+        if (Mathf.Abs(position - newX) < completeRevise_)
         {
             newX = position;
         }
 
-        if (Mathf.Abs(newX) >= Mathf.Abs(position) - messageRevise && Mathf.Abs(newX) <= Mathf.Abs(position) + messageRevise && !isMessageSend)
+        if (Mathf.Abs(newX) >= Mathf.Abs(position) - messageRevise_ && Mathf.Abs(newX) <= Mathf.Abs(position) + messageRevise_ && !isMessageSend)
         {
             isMessageSend = true;
             SendMessageFromContent(minContentNum);
         }
 
-        Vector2 newPosition = new Vector2(newX, contentPanelRT.anchoredPosition.y);
-        contentPanelRT.anchoredPosition = newPosition;
+        Vector2 newPosition = new Vector2(newX, contentPanelRT_.anchoredPosition.y);
+        contentPanelRT_.anchoredPosition = newPosition;
     }
 
     private void SendMessageFromContent(int contentIndex)

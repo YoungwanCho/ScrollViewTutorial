@@ -2128,7 +2128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 409841d3f462740c0967a94ef7d9b4cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  contents:
+  contents_:
   - {fileID: 1545024035}
   - {fileID: 246743416}
   - {fileID: 237728377}
@@ -2137,11 +2137,11 @@ MonoBehaviour:
   - {fileID: 1446233124}
   - {fileID: 552713601}
   - {fileID: 1326406556}
-  contentPanelRT: {fileID: 1930707015}
+  contentPanelRT_: {fileID: 1930707015}
   centerRT: {fileID: 2049507970}
-  startContent: 1
-  completeRevise: 3
-  messageRevise: 4
+  startContent_: 1
+  completeRevise_: 3
+  messageRevise_: 4
 --- !u!4 &1746301320
 Transform:
   m_ObjectHideFlags: 0
