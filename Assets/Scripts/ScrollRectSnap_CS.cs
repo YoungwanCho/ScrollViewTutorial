@@ -5,9 +5,11 @@ using UnityEngine.UI;
 
 public class ScrollRectSnap_CS : MonoBehaviour 
 {
-    public Button[] contents_ = null;
     public RectTransform contentPanelRT_ = null;
     public RectTransform centerRT = null;
+    public GameObject baseContent_ = null;
+    public int contentLength_ = 0;   
+    public int contentDistance_ = 0;
     public int startContent_ = 1;
     public float completeRevise_ = 3.0f;
     public float messageRevise_ = 4.0f;
@@ -18,9 +20,8 @@ public class ScrollRectSnap_CS : MonoBehaviour
     private float lerpSpeed = 5f;
     private float thresholdLeft = 0.0f;
     private float thresholdRight = 0.0f;
-    private int contentDistance = 0;
+
     private int minContentNum = 0;
-    private int contentLength = 0;
     private bool isDragging = false;
     private bool isMessageSend = false;
     private bool isTargetNearsContent = true;
@@ -35,7 +36,7 @@ public class ScrollRectSnap_CS : MonoBehaviour
 
     private void Update()
     {
-        for (int i = 0; i < contentLength; i++)
+        for (int i = 0; i < contentLength_; i++)
         {
             distReposition[i] = centerRT.position.x - _contentsRT[i].position.x;
             distance[i] = Mathf.Abs(distReposition[i]);
@@ -45,7 +46,7 @@ public class ScrollRectSnap_CS : MonoBehaviour
                 float curX = _contentsRT[i].anchoredPosition.x;
                 float curY = _contentsRT[i].anchoredPosition.y;
 
-                Vector2 newAnchoredPos = new Vector2(curX + (contentLength * contentDistance), curY);
+                Vector2 newAnchoredPos = new Vector2(curX + (contentLength_ * contentDistance_), curY);
                 _contentsRT[i].anchoredPosition= newAnchoredPos;
             }
 
@@ -54,17 +55,17 @@ public class ScrollRectSnap_CS : MonoBehaviour
                 float curX = _contentsRT[i].anchoredPosition.x;
                 float curY = _contentsRT[i].anchoredPosition.y;
 
-                Vector2 newAnchoredPos = new Vector2(curX - (contentLength * contentDistance), curY);
+                Vector2 newAnchoredPos = new Vector2(curX - (contentLength_ * contentDistance_), curY);
                 _contentsRT[i].anchoredPosition = newAnchoredPos;
             }
 
-            if (distance[i] >= contentDistance)
+            if (distance[i] >= contentDistance_)
             {
                 scale = Vector3.one;
             }
             else
             {
-                scaleValue = ((contentDistance - distance[i]) / contentDistance);
+                scaleValue = ((contentDistance_ - distance[i]) / contentDistance_);
                 scaleValue *= 0.1f;
                 scale = new Vector3(1 + scaleValue, 1 + scaleValue, 1);
             }
@@ -74,7 +75,7 @@ public class ScrollRectSnap_CS : MonoBehaviour
         if (isTargetNearsContent)
         {
             float minDistance = Mathf.Min(distance);
-            for (int a = 0; a < contentLength; a++)
+            for (int a = 0; a < contentLength_; a++)
             {
                 if (minDistance == distance[a])
                 {
@@ -91,20 +92,14 @@ public class ScrollRectSnap_CS : MonoBehaviour
 
     private void Initialize()
     {
-        contentLength = contents_.Length;
-        distance = new float[contentLength];
-        distReposition = new float[contentLength];
-        _contentsRT = new RectTransform[contentLength];
+        distance = new float[contentLength_];
+        distReposition = new float[contentLength_];
+        _contentsRT = new RectTransform[contentLength_];
 
-        for (int i = 0; i < contentLength; i++)
-        {
-            _contentsRT[i] = contents_[i].GetComponent<RectTransform>();
-        }
+        CreateContent(baseContent_);
+        contentPanelRT_.anchoredPosition = new Vector2((startContent_ - 1) * -contentDistance_, 0);
 
-        contentDistance = (int)Mathf.Abs(_contentsRT[1].anchoredPosition.x - _contentsRT[0].anchoredPosition.x);
-        contentPanelRT_.anchoredPosition = new Vector2((startContent_ - 1) * -contentDistance, 0);
-
-        float panelWidth = contentLength * contentDistance;
+        float panelWidth = contentLength_ * contentDistance_;
         thresholdLeft = -(panelWidth * 0.5f);
         thresholdRight = panelWidth * 0.5f;
     }
@@ -149,5 +144,26 @@ public class ScrollRectSnap_CS : MonoBehaviour
     {
         isTargetNearsContent = false;
         minContentNum = contentIndex - 1;
+    }
+
+    public void CreateContent(GameObject baseObject)
+    {
+        if (baseObject.GetComponent<RectTransform>() == null)
+        {
+            Debug.LogWarningFormat("There is no Rect Transform component in the scroll view content.");
+            baseObject.AddComponent<RectTransform>();
+        }
+
+        GameObject go = null;
+        for (int i = 0; i < contentLength_; i++)
+        {
+            go = Instantiate<GameObject>(baseObject);
+            _contentsRT[i] = go.GetComponent<RectTransform>();
+            _contentsRT[i].SetParent(contentPanelRT_);
+            _contentsRT[i].anchoredPosition = new Vector3(i * contentDistance_, 0, 0);
+            _contentsRT[i].localRotation = Quaternion.identity;
+            _contentsRT[i].localScale = Vector3.one;
+        }
+        GameObject.Destroy(baseObject);
     }
 }
