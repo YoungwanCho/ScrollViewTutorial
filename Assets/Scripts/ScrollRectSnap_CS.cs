@@ -15,22 +15,22 @@ public class ScrollRectSnap_CS : MonoBehaviour
     public float messageRevise_ = 4.0f;
 
     private RectTransform[] _contentsRT = null;
-    private float[] distance = null;
-    private float[] distReposition = null;
-    private float lerpSpeed = 5f;
-    private float thresholdLeft = 0.0f;
-    private float thresholdRight = 0.0f;
-    private int leftmostDataIndex = 0;
+    private float[] _distance = null;
+    private float[] _distReposition = null;
+    private float _lerpSpeed = 5f;
+    private float _thresholdLeft = 0.0f;
+    private float _thresholdRight = 0.0f;
+    private int _leftmostDataIndex = 0;
 
-    private int minContentNum = 0;
-    private bool isDragging = false;
-    private bool isMessageSend = false;
-    private bool isTargetNearsContent = true;
+    private int _minContentNum = 0;
+    private bool _isDragging = false;
+    private bool _isMessageSend = false;
+    private bool _isTargetNearsContent = true;
+    private Vector3 _scale = Vector3.one;
+    private float _scaleValue = 0.0f;
 
-    private Vector3 scale = Vector3.one;
-    private float scaleValue = 0.0f;
-    private int[] fakeDate = new int[40];
-    private Text[] fakeInstance = null;
+    private int[] _fakeDate = new int[40];
+    private Text[] _fakeInstance = null;
 
     private void Start()
     {
@@ -41,95 +41,95 @@ public class ScrollRectSnap_CS : MonoBehaviour
     {
         for (int i = 0; i < contentLength_; i++)
         {
-            distReposition[i] = centerRT.position.x - _contentsRT[i].position.x;
-            distance[i] = Mathf.Abs(distReposition[i]);
+            _distReposition[i] = centerRT.position.x - _contentsRT[i].position.x;
+            _distance[i] = Mathf.Abs(_distReposition[i]);
 
-            if (distReposition[i] > thresholdRight && leftmostDataIndex + contentLength_ < fakeDate.Length - 1)
+            if (_distReposition[i] > _thresholdRight && _leftmostDataIndex + contentLength_ < _fakeDate.Length - 1)
             {
                 float curX = _contentsRT[i].anchoredPosition.x;
                 float curY = _contentsRT[i].anchoredPosition.y;
 
                 Vector2 newAnchoredPos = new Vector2(curX + (contentLength_ * contentDistance_), curY);
                 _contentsRT[i].anchoredPosition = newAnchoredPos;
-                leftmostDataIndex++;
-                fakeInstance[i].text = fakeDate[leftmostDataIndex + contentLength_ - 1].ToString();
+                _leftmostDataIndex++;
+                _fakeInstance[i].text = _fakeDate[_leftmostDataIndex + contentLength_ - 1].ToString();
             }
 
-            if (distReposition[i] < thresholdLeft && leftmostDataIndex > 0)
+            if (_distReposition[i] < _thresholdLeft && _leftmostDataIndex > 0)
             {
                 float curX = _contentsRT[i].anchoredPosition.x;
                 float curY = _contentsRT[i].anchoredPosition.y;
 
                 Vector2 newAnchoredPos = new Vector2(curX - (contentLength_ * contentDistance_), curY);
                 _contentsRT[i].anchoredPosition = newAnchoredPos;
-                leftmostDataIndex--;
-                fakeInstance[i].text = fakeDate[leftmostDataIndex].ToString();
+                _leftmostDataIndex--;
+                _fakeInstance[i].text = _fakeDate[_leftmostDataIndex].ToString();
             }
 
-            if (distance[i] >= contentDistance_)
+            if (_distance[i] >= contentDistance_)
             {
-                scale = Vector3.one;
+                _scale = Vector3.one;
             }
             else
             {
-                scaleValue = ((contentDistance_ - distance[i]) / contentDistance_);
-                scaleValue *= 0.1f;
-                scale = new Vector3(1 + scaleValue, 1 + scaleValue, 1);
+                _scaleValue = ((contentDistance_ - _distance[i]) / contentDistance_);
+                _scaleValue *= 0.1f;
+                _scale = new Vector3(1 + _scaleValue, 1 + _scaleValue, 1);
             }
-            _contentsRT[i].localScale = scale;
+            _contentsRT[i].localScale = _scale;
         }
 
-        if (isTargetNearsContent)
+        if (_isTargetNearsContent)
         {
-            float minDistance = Mathf.Min(distance);
+            float minDistance = Mathf.Min(_distance);
             for (int a = 0; a < contentLength_; a++)
             {
-                if (minDistance == distance[a])
+                if (minDistance == _distance[a])
                 {
-                    minContentNum = a;
+                    _minContentNum = a;
                 }
             }
         }
 
-        if (!isDragging)
+        if (!_isDragging)
         {
-            LerpToContent(-_contentsRT[minContentNum].anchoredPosition.x);
+            LerpToContent(-_contentsRT[_minContentNum].anchoredPosition.x);
         }
     }
 
     private void Initialize()
     {
-        distance = new float[contentLength_];
-        distReposition = new float[contentLength_];
+        _distance = new float[contentLength_];
+        _distReposition = new float[contentLength_];
         _contentsRT = new RectTransform[contentLength_];
-        fakeInstance = new Text[contentLength_];
+        _fakeInstance = new Text[contentLength_];
 
         CreateContent(baseContent_);
         contentPanelRT_.anchoredPosition = new Vector2((startContent_ - 1) * -contentDistance_, 0);
 
         float panelWidth = contentLength_ * contentDistance_;
-        thresholdLeft = -(panelWidth * 0.5f);
-        thresholdRight = panelWidth * 0.5f;
+        _thresholdLeft = -(panelWidth * 0.5f);
+        _thresholdRight = panelWidth * 0.5f;
 
-        for (int i = 0; i < fakeDate.Length; i++)
+        for (int i = 0; i < _fakeDate.Length; i++)
         {
-            fakeDate[i] = i + 1;
+            _fakeDate[i] = i + 1;
         }
     }
 
     private void LerpToContent(float position)
     {
-        float newX = Mathf.Lerp(contentPanelRT_.anchoredPosition.x, position, Time.deltaTime * lerpSpeed);
+        float newX = Mathf.Lerp(contentPanelRT_.anchoredPosition.x, position, Time.deltaTime * _lerpSpeed);
 
         if (Mathf.Abs(position - newX) < completeRevise_)
         {
             newX = position;
         }
 
-        if (Mathf.Abs(newX) >= Mathf.Abs(position) - messageRevise_ && Mathf.Abs(newX) <= Mathf.Abs(position) + messageRevise_ && !isMessageSend)
+        if (Mathf.Abs(newX) >= Mathf.Abs(position) - messageRevise_ && Mathf.Abs(newX) <= Mathf.Abs(position) + messageRevise_ && !_isMessageSend)
         {
-            isMessageSend = true;
-            SendMessageFromContent(minContentNum);
+            _isMessageSend = true;
+            SendMessageFromContent(_minContentNum);
         }
 
         Vector2 newPosition = new Vector2(newX, contentPanelRT_.anchoredPosition.y);
@@ -143,20 +143,20 @@ public class ScrollRectSnap_CS : MonoBehaviour
 
     public void StartDrag()
     {
-        isMessageSend = false;
-        isDragging = true;
-        isTargetNearsContent = true;
+        _isMessageSend = false;
+        _isDragging = true;
+        _isTargetNearsContent = true;
     }
 
     public void EndDrag()
     {
-        isDragging = false; 
+        _isDragging = false; 
     }
 
     public void GoToContent(int contentIndex)
     {
-        isTargetNearsContent = false;
-        minContentNum = contentIndex - 1;
+        _isTargetNearsContent = false;
+        _minContentNum = contentIndex - 1;
     }
 
     public void CreateContent(GameObject baseObject)
@@ -176,8 +176,8 @@ public class ScrollRectSnap_CS : MonoBehaviour
             _contentsRT[i].anchoredPosition = new Vector3(i * contentDistance_, 0, 0);
             _contentsRT[i].localRotation = Quaternion.identity;
             _contentsRT[i].localScale = Vector3.one;
-            fakeInstance[i] = go.GetComponentInChildren<Text>();
-            fakeInstance[i].text = i.ToString();
+            _fakeInstance[i] = go.GetComponentInChildren<Text>();
+            _fakeInstance[i].text = i.ToString();
         }
         GameObject.Destroy(baseObject);
     }
