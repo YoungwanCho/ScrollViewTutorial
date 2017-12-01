@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class ScrollRectSnap_CS : MonoBehaviour 
@@ -13,38 +11,51 @@ public class ScrollRectSnap_CS : MonoBehaviour
     public int startContent_ = 1;
     public float completeRevise_ = 3.0f;
     public float messageRevise_ = 4.0f;
+    public ListViewEvent ContentViewUpdateAction_;
 
     private RectTransform[] _contentsRT = null;
+    private int _leftmostDataIndex = 0;
+    private int _minContentNum = 0;
     private float[] _distance = null;
     private float[] _distReposition = null;
     private float _lerpSpeed = 5f;
     private float _thresholdLeft = 0.0f;
     private float _thresholdRight = 0.0f;
-    private int _leftmostDataIndex = 0;
-
-    private int _minContentNum = 0;
     private bool _isDragging = false;
     private bool _isMessageSend = false;
     private bool _isTargetNearsContent = true;
     private Vector3 _scale = Vector3.one;
     private float _scaleValue = 0.0f;
+    private int dataLength = 0;
 
-    private int[] _fakeDate = new int[40];
-    private Text[] _fakeInstance = null;
+    public void Initialize(int dataLength)
+    {
+        this.dataLength = dataLength;
+    }
 
     private void Start()
     {
-        Initialize();
+        Initialize(40);
+        _distance = new float[contentLength_];
+        _distReposition = new float[contentLength_];
+        _contentsRT = new RectTransform[contentLength_];
+
+        CreateContent(baseContent_);
+        contentPanelRT_.anchoredPosition = new Vector2((startContent_ - 1) * -contentDistance_, 0);
+
+        float panelWidth = contentLength_ * contentDistance_;
+        _thresholdLeft = -(panelWidth * 0.5f);
+        _thresholdRight = panelWidth * 0.5f;
     }
 
-    private void Update()
+    public void Update()
     {
         for (int i = 0; i < contentLength_; i++)
         {
             _distReposition[i] = centerRT.position.x - _contentsRT[i].position.x;
             _distance[i] = Mathf.Abs(_distReposition[i]);
 
-            if (_distReposition[i] > _thresholdRight && _leftmostDataIndex + contentLength_ < _fakeDate.Length - 1)
+            if (_distReposition[i] > _thresholdRight && _leftmostDataIndex + contentLength_ < dataLength)
             {
                 float curX = _contentsRT[i].anchoredPosition.x;
                 float curY = _contentsRT[i].anchoredPosition.y;
@@ -52,7 +63,7 @@ public class ScrollRectSnap_CS : MonoBehaviour
                 Vector2 newAnchoredPos = new Vector2(curX + (contentLength_ * contentDistance_), curY);
                 _contentsRT[i].anchoredPosition = newAnchoredPos;
                 _leftmostDataIndex++;
-                _fakeInstance[i].text = _fakeDate[_leftmostDataIndex + contentLength_ - 1].ToString();
+                ContentViewUpdateAction_.Invoke(_contentsRT[i].gameObject, _leftmostDataIndex + contentLength_ - 1);
             }
 
             if (_distReposition[i] < _thresholdLeft && _leftmostDataIndex > 0)
@@ -63,7 +74,7 @@ public class ScrollRectSnap_CS : MonoBehaviour
                 Vector2 newAnchoredPos = new Vector2(curX - (contentLength_ * contentDistance_), curY);
                 _contentsRT[i].anchoredPosition = newAnchoredPos;
                 _leftmostDataIndex--;
-                _fakeInstance[i].text = _fakeDate[_leftmostDataIndex].ToString();
+                ContentViewUpdateAction_.Invoke(_contentsRT[i].gameObject, _leftmostDataIndex);
             }
 
             if (_distance[i] >= contentDistance_)
@@ -94,26 +105,6 @@ public class ScrollRectSnap_CS : MonoBehaviour
         if (!_isDragging)
         {
             LerpToContent(-_contentsRT[_minContentNum].anchoredPosition.x);
-        }
-    }
-
-    private void Initialize()
-    {
-        _distance = new float[contentLength_];
-        _distReposition = new float[contentLength_];
-        _contentsRT = new RectTransform[contentLength_];
-        _fakeInstance = new Text[contentLength_];
-
-        CreateContent(baseContent_);
-        contentPanelRT_.anchoredPosition = new Vector2((startContent_ - 1) * -contentDistance_, 0);
-
-        float panelWidth = contentLength_ * contentDistance_;
-        _thresholdLeft = -(panelWidth * 0.5f);
-        _thresholdRight = panelWidth * 0.5f;
-
-        for (int i = 0; i < _fakeDate.Length; i++)
-        {
-            _fakeDate[i] = i + 1;
         }
     }
 
@@ -176,9 +167,9 @@ public class ScrollRectSnap_CS : MonoBehaviour
             _contentsRT[i].anchoredPosition = new Vector3(i * contentDistance_, 0, 0);
             _contentsRT[i].localRotation = Quaternion.identity;
             _contentsRT[i].localScale = Vector3.one;
-            _fakeInstance[i] = go.GetComponentInChildren<Text>();
-            _fakeInstance[i].text = i.ToString();
+            go.SetActive(true);
+            ContentViewUpdateAction_.Invoke(go, i);
         }
-        GameObject.Destroy(baseObject);
+        baseObject.SetActive(false);
     }
 }
