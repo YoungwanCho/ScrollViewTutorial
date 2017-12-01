@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class ScrollRectSnap_CS : MonoBehaviour 
+public class ListView : MonoBehaviour 
 {
     public RectTransform contentPanelRT_ = null;
     public RectTransform centerRT = null;

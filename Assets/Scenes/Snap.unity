@@ -139,8 +139,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 345c7f4b321f44698adb7a41c7681266, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _contentPrefab: {fileID: 1614908972194384, guid: c97d258e93aee42c4a58a1f47dc597d6,
-    type: 2}
   contentViewUpdateName: UpdateView
 --- !u!4 &169331264
 Transform:
@@ -153,7 +151,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &176288253
 GameObject:
@@ -165,10 +163,11 @@ GameObject:
   - component: {fileID: 176288254}
   - component: {fileID: 176288257}
   - component: {fileID: 176288256}
+  - component: {fileID: 176288259}
   - component: {fileID: 176288255}
   - component: {fileID: 176288258}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: ListView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -275,7 +274,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1746301319}
+        - m_Target: {fileID: 0}
           m_MethodName: StartDrag
           m_Mode: 1
           m_Arguments:
@@ -292,7 +291,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1746301319}
+        - m_Target: {fileID: 0}
           m_MethodName: EndDrag
           m_Mode: 1
           m_Arguments:
@@ -306,6 +305,42 @@ MonoBehaviour:
       m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
         Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   delegates: []
+--- !u!114 &176288259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 176288253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 409841d3f462740c0967a94ef7d9b4cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  contentPanelRT_: {fileID: 1930707015}
+  centerRT: {fileID: 2049507970}
+  baseContent_: {fileID: 1614908972194384, guid: c97d258e93aee42c4a58a1f47dc597d6,
+    type: 2}
+  contentLength_: 8
+  contentDistance_: 300
+  startContent_: 1
+  completeRevise_: 3
+  messageRevise_: 4
+  ContentViewUpdateAction_:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 169331263}
+        m_MethodName: ContentViewUpdate
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: ListViewEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!1 &314360689
 GameObject:
   m_ObjectHideFlags: 0
@@ -598,7 +633,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1746301319}
+      - m_Target: {fileID: 0}
         m_MethodName: GoToContent
         m_Mode: 3
         m_Arguments:
@@ -738,71 +773,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1746301318
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 1746301320}
-  - component: {fileID: 1746301319}
-  m_Layer: 0
-  m_Name: GameController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
-  m_IsActive: 1
---- !u!114 &1746301319
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1746301318}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 409841d3f462740c0967a94ef7d9b4cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  contentPanelRT_: {fileID: 1930707015}
-  centerRT: {fileID: 2049507970}
-  baseContent_: {fileID: 1614908972194384, guid: c97d258e93aee42c4a58a1f47dc597d6,
-    type: 2}
-  contentLength_: 8
-  contentDistance_: 300
-  startContent_: 1
-  completeRevise_: 3
-  messageRevise_: 4
-  ContentViewUpdateAction_:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 169331263}
-        m_MethodName: ContentViewUpdate
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: ListViewEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
---- !u!4 &1746301320
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1746301318}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 512, y: 384, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1767525159
 GameObject:
   m_ObjectHideFlags: 0
