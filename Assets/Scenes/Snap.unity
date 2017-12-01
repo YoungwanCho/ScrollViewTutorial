@@ -139,6 +139,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 345c7f4b321f44698adb7a41c7681266, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  listview_: {fileID: 176288259}
   contentViewUpdateName: UpdateView
 --- !u!4 &169331264
 Transform:
@@ -274,7 +275,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
+        - m_Target: {fileID: 176288259}
           m_MethodName: StartDrag
           m_Mode: 1
           m_Arguments:
@@ -291,7 +292,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 0}
+        - m_Target: {fileID: 176288259}
           m_MethodName: EndDrag
           m_Mode: 1
           m_Arguments:
@@ -325,22 +326,6 @@ MonoBehaviour:
   startContent_: 1
   completeRevise_: 3
   messageRevise_: 4
-  ContentViewUpdateAction_:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 169331263}
-        m_MethodName: ContentViewUpdate
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: ListViewEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-      PublicKeyToken=null
 --- !u!1 &314360689
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System;
+using UnityEngine;
 
 public class ListView : MonoBehaviour 
 {
@@ -11,7 +11,6 @@ public class ListView : MonoBehaviour
     public int startContent_ = 1;
     public float completeRevise_ = 3.0f;
     public float messageRevise_ = 4.0f;
-    public ListViewEvent ContentViewUpdateAction_;
 
     private RectTransform[] _contentsRT = null;
     private int _leftmostDataIndex = 0;
@@ -28,14 +27,15 @@ public class ListView : MonoBehaviour
     private float _scaleValue = 0.0f;
     private int dataLength = 0;
 
-    public void Initialize(int dataLength)
-    {
-        this.dataLength = dataLength;
-    }
+    private bool _isInit = false;
+    private Func<int> GetContentDataCount = null;
+    private Action<GameObject, int> UpdateContentView = null;
 
-    private void Start()
+    public void Initialize(Func<int> getContentDataCount, Action<GameObject, int> updateContentView)
     {
-        Initialize(40);
+        this.GetContentDataCount = getContentDataCount;
+        this.UpdateContentView = updateContentView;
+
         _distance = new float[contentLength_];
         _distReposition = new float[contentLength_];
         _contentsRT = new RectTransform[contentLength_];
@@ -46,16 +46,21 @@ public class ListView : MonoBehaviour
         float panelWidth = contentLength_ * contentDistance_;
         _thresholdLeft = -(panelWidth * 0.5f);
         _thresholdRight = panelWidth * 0.5f;
+
+        _isInit = true;
     }
 
     public void Update()
     {
+        if (!_isInit)
+            return;
+        
         for (int i = 0; i < contentLength_; i++)
         {
             _distReposition[i] = centerRT.position.x - _contentsRT[i].position.x;
             _distance[i] = Mathf.Abs(_distReposition[i]);
 
-            if (_distReposition[i] > _thresholdRight && _leftmostDataIndex + contentLength_ < dataLength)
+            if (_distReposition[i] > _thresholdRight && _leftmostDataIndex + contentLength_ < GetContentDataCount())
             {
                 float curX = _contentsRT[i].anchoredPosition.x;
                 float curY = _contentsRT[i].anchoredPosition.y;
@@ -63,7 +68,8 @@ public class ListView : MonoBehaviour
                 Vector2 newAnchoredPos = new Vector2(curX + (contentLength_ * contentDistance_), curY);
                 _contentsRT[i].anchoredPosition = newAnchoredPos;
                 _leftmostDataIndex++;
-                ContentViewUpdateAction_.Invoke(_contentsRT[i].gameObject, _leftmostDataIndex + contentLength_ - 1);
+                UpdateContentView(_contentsRT[i].gameObject, _leftmostDataIndex + contentLength_ - 1);
+
             }
 
             if (_distReposition[i] < _thresholdLeft && _leftmostDataIndex > 0)
@@ -74,7 +80,7 @@ public class ListView : MonoBehaviour
                 Vector2 newAnchoredPos = new Vector2(curX - (contentLength_ * contentDistance_), curY);
                 _contentsRT[i].anchoredPosition = newAnchoredPos;
                 _leftmostDataIndex--;
-                ContentViewUpdateAction_.Invoke(_contentsRT[i].gameObject, _leftmostDataIndex);
+                UpdateContentView(_contentsRT[i].gameObject, _leftmostDataIndex);
             }
 
             if (_distance[i] >= contentDistance_)
@@ -168,7 +174,7 @@ public class ListView : MonoBehaviour
             _contentsRT[i].localRotation = Quaternion.identity;
             _contentsRT[i].localScale = Vector3.one;
             go.SetActive(true);
-            ContentViewUpdateAction_.Invoke(go, i);
+            UpdateContentView(go, i);
         }
         baseObject.SetActive(false);
     }
