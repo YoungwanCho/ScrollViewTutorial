@@ -25,7 +25,6 @@ public class ListView : MonoBehaviour
     private bool _isTargetNearsContent = true;
     private Vector3 _scale = Vector3.one;
     private float _scaleValue = 0.0f;
-    private int dataLength = 0;
 
     private bool _isInit = false;
     private Func<int> GetContentDataCount = null;
